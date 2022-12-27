@@ -1,94 +1,72 @@
-import { useEffect, useState } from 'react';
+import { useMemo, useState } from 'react';
 import './App.css';
 
-function App() {
-  const [currentCountry, setCurrentCountry] = useState('');
-  const [questionOptions, setQuestionOptions] = useState([]);
-  const [score, setScore] = useState(0);
-  const [questionsAnswered, setQuestionsAnswered] = useState(0);
-  const answerLength = 6;
-  const [correctAnswer, setCorrectAnswer] = useState(false);
+import '@fontsource/roboto/300.css';
+import '@fontsource/roboto/400.css';
+import '@fontsource/roboto/500.css';
+import '@fontsource/roboto/700.css';
 
-  const getCountries = () => {
-    fetch('assets/world.json', {
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
+import { amber, deepOrange, grey } from '@mui/material/colors';
+import CssBaseline from '@mui/material/CssBaseline';
+import {
+  createTheme,
+  Experimental_CssVarsProvider as CssVarsProvider,
+  ThemeProvider,
+} from '@mui/material/styles';
+import Main from './Main';
+
+const getDesignTokens = (mode) => ({
+  palette: {
+    mode,
+    primary: {
+      ...amber,
+      ...(mode === 'dark' && {
+        main: amber[300],
+      }),
+    },
+    ...(mode === 'dark' && {
+      background: {
+        default: deepOrange[900],
+        paper: deepOrange[900],
       },
-    })
-      .then(function (response) {
-        console.log(response);
-        return response.json();
-      })
-      .then(function (myJson) {
-        console.log(myJson);
-        const rand = getRandomCountry(myJson);
-        console.log(rand);
-        setCurrentCountry(myJson[rand]);
-        console.log('Current Country: ', currentCountry);
-        const options = [];
-        options.push(myJson[rand]);
-        for (let index = 0; index < answerLength - 1; index++) {
-          options.push(myJson[getRandomCountry(myJson)]);
-        }
-        let shuffled = options
-          .map((value) => ({ value, sort: Math.random() }))
-          .sort((a, b) => a.sort - b.sort)
-          .map(({ value }) => value);
-        setQuestionOptions(shuffled);
-      });
-  };
+    }),
+    text: {
+      ...(mode === 'light'
+        ? {
+            primary: grey[900],
+            secondary: grey[800],
+          }
+        : {
+            primary: '#fff',
+            secondary: grey[500],
+          }),
+    },
+  },
+});
 
-  const getRandomCountry = (countries, excludeId) => {
-    return Math.round(Math.random() * (countries.length - 1));
-  };
+function App() {
+  const [mode, setMode] = useState('dark');
 
-  const checkAnswer = (answer) => {
-    return () => {
-      if (answer === currentCountry.alpha2) {
-        // alert('Correct!');
-        setCorrectAnswer(true);
-        setScore(score + 1);
-        setQuestionsAnswered(questionsAnswered + 1);
-        console.log('Score', score);
-        console.log('Questions Answered', questionsAnswered);
-      } else {
-        // alert('Wrong! it was ' + currentCountry.en + '!');
-        setCorrectAnswer(false);
-        setQuestionsAnswered(questionsAnswered + 1);
-        console.log('Questions Answered', questionsAnswered);
-      }
-      getCountries();
-    };
-  };
+  const colorMode = useMemo(
+    () => ({
+      // The dark mode switch would invoke this method
+      toggleColorMode: () => {
+        setMode((prevMode) => (prevMode === 'light' ? 'dark' : 'light'));
+      },
+    }),
+    [],
+  );
 
-  useEffect(() => {
-    getCountries();
-  }, []);
+  // Update the theme only if the mode changes
+  const theme = useMemo(() => createTheme(getDesignTokens(mode)), [mode]);
 
   return (
-    <div className='App'>
-      <header className='App-header'>
-        {/* <p>Current Country: {currentCountry.en}</p> */}
-        {questionsAnswered > 0 && (
-          <p>{correctAnswer ? <>Correct</> : <>Wrong</>}</p>
-        )}
-        <p>
-          Score: {score} : {questionsAnswered} (questions answered)
-        </p>
-        <img src={`assets/128x128/${currentCountry.alpha2}.png`} alt='logo' />
-
-        <div className='optionsWrapper'>
-          {questionOptions.map((option) => {
-            return (
-              <button className='App-link' onClick={checkAnswer(option.alpha2)}>
-                {option.en}
-              </button>
-            );
-          })}
-        </div>
-      </header>
-    </div>
+    <ThemeProvider theme={theme}>
+      <CssVarsProvider>
+        <CssBaseline />
+        <Main />
+      </CssVarsProvider>
+    </ThemeProvider>
   );
 }
 
