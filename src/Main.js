@@ -30,6 +30,7 @@ function Main() {
   const answerLength = 4;
   const [correctAnswer, setCorrectAnswer] = useState(false);
   const [listOfAnswers, setListOfAnswers] = useState([]);
+  const [usedIds, setUsedIds] = useState([]);
   const [highestScore, setHighestScore] = useState(() => {
     const saved = localStorage.getItem('highScore');
     const initialValue = JSON.parse(saved);
@@ -52,13 +53,13 @@ function Main() {
       .then(function (myJson) {
         const rand = getRandomCountry(myJson);
 
-        setCurrentCountry(myJson[rand]);
+        setCurrentCountry(rand);
 
         const options = [];
-        options.push(myJson[rand]);
+        options.push(rand);
 
         for (let index = 0; index < answerLength - 1; index++) {
-          options.push(myJson[getRandomCountry(myJson)]);
+          options.push(getRandomCountry(myJson));
         }
         let shuffled = options
           .map((value) => ({ value, sort: Math.random() }))
@@ -68,8 +69,15 @@ function Main() {
       });
   };
 
-  const getRandomCountry = (countries, excludeId) => {
-    return Math.round(Math.random() * (countries.length - 1));
+  const getRandomCountry = (countries) => {
+    const selectedCountry =
+      countries[Math.round(Math.random() * (countries.length - 1))];
+    if (usedIds.includes(selectedCountry.id)) {
+      return getRandomCountry(countries);
+    } else {
+      setUsedIds([...usedIds, selectedCountry.id]);
+      return selectedCountry;
+    }
   };
 
   const checkAnswer = (answer) => {
@@ -186,7 +194,7 @@ function Main() {
               <div className='optionsWrapper'>
                 {questionOptions.map((option) => {
                   return (
-                    <Box sx={{ mb: 1 }}>
+                    <Box sx={{ mb: 1 }} key={option.id}>
                       <Button
                         variant='contained'
                         onClick={checkAnswer(option.alpha2)}
