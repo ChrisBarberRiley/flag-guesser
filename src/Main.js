@@ -80,8 +80,6 @@ function Main() {
         questionOptions: questionOptions,
       };
       if (answer === currentCountry.alpha2) {
-        // alert('Correct!');
-
         data.correct = true;
         setCorrectAnswer(true);
         setScore(score + 1);
@@ -174,7 +172,6 @@ function Main() {
           </Grid>
           <Grid xs={12} md={8} order={{ xs: 1, md: 2 }}>
             <Item>
-              {/* <p>Current Country: {currentCountry.en}</p> */}
               {questionsAnswered > 0 && (
                 <p>{correctAnswer ? <>Correct</> : <>Wrong</>}</p>
               )}
