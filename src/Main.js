@@ -8,6 +8,7 @@ import '@fontsource/roboto/700.css';
 
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import Chip from '@mui/material/Chip';
 import Paper from '@mui/material/Paper';
 import { styled } from '@mui/material/styles';
 import Grid from '@mui/material/Unstable_Grid2';
@@ -26,9 +27,16 @@ function Main() {
   const [questionOptions, setQuestionOptions] = useState([]);
   const [score, setScore] = useState(0);
   const [questionsAnswered, setQuestionsAnswered] = useState(0);
-  const answerLength = 6;
+  const answerLength = 4;
   const [correctAnswer, setCorrectAnswer] = useState(false);
   const [listOfAnswers, setListOfAnswers] = useState([]);
+  const [highestScore, setHighestScore] = useState(() => {
+    const saved = localStorage.getItem('highScore');
+    const initialValue = JSON.parse(saved);
+    return initialValue || 0;
+  });
+
+  useEffect(() => {}, []);
 
   const getCountries = () => {
     fetch('assets/world.json', {
@@ -97,10 +105,18 @@ function Main() {
   }, []);
 
   const resetGame = () => {
+    setHighScore();
     setScore(0);
     setQuestionsAnswered(0);
     setListOfAnswers([]);
     getCountries();
+  };
+
+  const setHighScore = () => {
+    if (score > highestScore) {
+      setHighestScore(score);
+      localStorage.setItem('highScore', JSON.stringify(score));
+    }
   };
 
   const { mode, setMode } = useColorScheme();
@@ -111,6 +127,7 @@ function Main() {
       <Box sx={{ flexGrow: 1, m: 2 }}>
         <Grid container justifyContent='flex-end' sx={{ mb: 2 }}>
           <Item>
+            <Chip label={`Highest score: ${highestScore}`} />
             <Button
               variant='outlined'
               onClick={resetGame}
@@ -135,9 +152,9 @@ function Main() {
           </Item>
         </Grid>
         <Grid container spacing={1}>
-          <Grid xs={4} md={4} order={{ xs: 2, md: 1 }}>
+          <Grid xs={12} md={4} order={{ xs: 2, md: 1 }}>
             <Item>
-              <h2>Answers</h2>
+              <h2>Your Answers</h2>
               <ul>
                 {listOfAnswers.map((answer) => {
                   console.log(answer);
