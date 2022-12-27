@@ -23,6 +23,8 @@ const Item = styled(Paper)(({ theme }) => ({
 }));
 
 function Main() {
+  const [countries, setCountries] = useState([]);
+  const [complete, setComplete] = useState(true);
   const [currentCountry, setCurrentCountry] = useState('');
   const [questionOptions, setQuestionOptions] = useState([]);
   const [score, setScore] = useState(0);
@@ -51,6 +53,7 @@ function Main() {
         return response.json();
       })
       .then(function (myJson) {
+        setCountries(myJson);
         const rand = getRandomCountry(myJson);
 
         setCurrentCountry(rand);
@@ -98,6 +101,9 @@ function Main() {
         setQuestionsAnswered(questionsAnswered + 1);
       }
       setListOfAnswers([data, ...listOfAnswers]);
+      if (score == countries.length - 1) {
+        setComplete(true);
+      }
       getCountries();
     };
   };
@@ -122,6 +128,16 @@ function Main() {
   };
 
   const { mode, setMode } = useColorScheme();
+
+  if (complete) {
+    return (
+      <div className='App'>
+        <h1>You've completed the game</h1>
+
+        <img src={`assets/well-done.gif`} alt='logo' />
+      </div>
+    );
+  }
 
   return (
     <div className='App'>
@@ -188,7 +204,7 @@ function Main() {
               </p>
               <img
                 src={`assets/128x128/${currentCountry.alpha2}.png`}
-                alt='logo'
+                alt='Flag'
               />
 
               <div className='optionsWrapper'>
