@@ -50,13 +50,13 @@ function Main() {
         return response.json();
       })
       .then(function (myJson) {
-        console.log(myJson);
         const rand = getRandomCountry(myJson);
-        console.log(rand);
+
         setCurrentCountry(myJson[rand]);
-        console.log('Current Country: ', currentCountry);
+
         const options = [];
         options.push(myJson[rand]);
+
         for (let index = 0; index < answerLength - 1; index++) {
           options.push(myJson[getRandomCountry(myJson)]);
         }
@@ -86,14 +86,10 @@ function Main() {
         setCorrectAnswer(true);
         setScore(score + 1);
         setQuestionsAnswered(questionsAnswered + 1);
-        console.log('Score', score);
-        console.log('Questions Answered', questionsAnswered);
       } else {
-        // alert('Wrong! it was ' + currentCountry.en + '!');
         data.correct = false;
         setCorrectAnswer(false);
         setQuestionsAnswered(questionsAnswered + 1);
-        console.log('Questions Answered', questionsAnswered);
       }
       setListOfAnswers([data, ...listOfAnswers]);
       getCountries();
@@ -120,7 +116,6 @@ function Main() {
   };
 
   const { mode, setMode } = useColorScheme();
-  console.log('mode', mode);
 
   return (
     <div className='App'>
