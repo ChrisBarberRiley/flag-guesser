@@ -24,7 +24,7 @@ const Item = styled(Paper)(({ theme }) => ({
 
 function Main() {
   const [countries, setCountries] = useState([]);
-  const [complete, setComplete] = useState(true);
+  const [complete, setComplete] = useState(false);
   const [currentCountry, setCurrentCountry] = useState('');
   const [questionOptions, setQuestionOptions] = useState([]);
   const [score, setScore] = useState(0);
@@ -101,7 +101,7 @@ function Main() {
         setQuestionsAnswered(questionsAnswered + 1);
       }
       setListOfAnswers([data, ...listOfAnswers]);
-      if (score == countries.length - 1) {
+      if (score === countries.length - 1) {
         setComplete(true);
       }
       getCountries();
