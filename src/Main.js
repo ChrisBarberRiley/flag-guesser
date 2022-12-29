@@ -68,7 +68,12 @@ function Main() {
           .map((value) => ({ value, sort: Math.random() }))
           .sort((a, b) => a.sort - b.sort)
           .map(({ value }) => value);
-        setQuestionOptions(shuffled);
+
+        let removeDup = shuffled.filter(
+          (value, index, self) =>
+            index === self.findIndex((t) => t.id === value.id),
+        );
+        setQuestionOptions(removeDup);
       });
   };
 
